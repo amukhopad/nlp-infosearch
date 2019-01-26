@@ -1,12 +1,20 @@
 import util.file
 import util.pdf
+import util.doc
+import sys
 
 
-def index(filename: str):
-    type = util.file.extension(filename)
+def index(input: str):
+    file_type = util.file.extension(input)
+    filename = input
 
-    if type == 'pdf':
+    if file_type == 'pdf':
         filename = util.pdf.to_text(filename)
-    elif type.startswith('doc'):
+    elif file_type == 'docx':
         filename = util.doc.to_text(filename)
+
+    print("done")
+
+
+index(sys.argv[1])
 

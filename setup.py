@@ -8,5 +8,5 @@ setup(
     include_package_data=True,
     cmdclass={
         "util": util
-    }, install_requires=['textract']
+    }
 )
