@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 pypdf2 = "*"
 docx = "*"
+nltk = "*"
 
 [requires]
 python_version = "3.7"
