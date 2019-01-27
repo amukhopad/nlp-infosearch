@@ -1,16 +1,14 @@
 import re
 import string
-from typing import List
-
 import os
 import json
-import sys
 
+from typing import List
 from nltk.stem.porter import PorterStemmer
 from util.file import handle_formats
 
 
-def index(input_dir: str):
+def index(input_dir: str, index_filename: str):
     mem_index = {}
     file_names = []
 
@@ -22,7 +20,7 @@ def index(input_dir: str):
             mem_index = update_index(fid, full_path, mem_index)
             file_names.append(full_path)
 
-    with open('index.json', 'w+') as index_file:
+    with open(index_filename, 'w+') as index_file:
         data = {'files': file_names, 'index': mem_index}
         json.dump(data, index_file)
 
@@ -58,6 +56,3 @@ def process(text: str):
     result = re.sub(r'([a-z])([A-Z])', r'\1 \2', text).lower()
     result = re.split(f'[\s{string.punctuation}]+', result)
     return [PorterStemmer().stem(word) for word in result]
-
-
-index(sys.argv[1])

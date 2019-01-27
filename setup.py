@@ -1,5 +1,6 @@
 from setuptools import find_packages, setup
 import util
+import index
 
 setup(
     author='Alexander Mukhopad',
@@ -7,6 +8,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     cmdclass={
-        "util": util
+        "util": util,
+        "index": index
     }
 )
