@@ -1,6 +1,7 @@
 from setuptools import find_packages, setup
 import util
 import index
+import docx
 
 setup(
     author='Alexander Mukhopad',
@@ -9,6 +10,7 @@ setup(
     include_package_data=True,
     cmdclass={
         "util": util,
-        "index": index
+        "index": index,
+        "docx": docx
     }
 )

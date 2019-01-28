@@ -3,7 +3,7 @@ import util.file
 
 
 def to_text(filename: str) -> str:
-    out_filename = util.file.txt_name(filename)
+    out_filename = util.file.temp_name(filename)
 
     pdf_file = open(filename, 'rb')
     out_file = open(out_filename, 'w+')

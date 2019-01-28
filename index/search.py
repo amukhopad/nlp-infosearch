@@ -1,21 +1,8 @@
-import json
 import re
 from typing import List
 
 from index import process
-
-
-def query_cli(filename: str):
-    json_file = open(filename, 'r')
-    index = json.load(json_file)
-
-    while True:
-        query = input('query> ')
-        try:
-            ans = interpret(query, index)
-            print_search_result(ans, index)
-        except (SyntaxError, ValueError) as e:
-            print(f"Bad syntax. {e}")
+from util.bitwise import full_bits_int, bit_not
 
 
 def interpret(query: str, index: dict) -> int:
@@ -42,6 +29,15 @@ def search_operands(query: str, index: dict) -> List[str]:
     return evaluated
 
 
+def search(query: str, index: dict) -> str:
+    files = index['files']
+    result = full_bits_int(len(files))
+    for token in process(query):
+        searched = index['index'].get(token, 0)
+        result = result & searched
+    return str(result)
+
+
 def search_not(query: List[str], index: dict) -> List[str]:
     evaluated = []
     idx = 0
@@ -63,18 +59,5 @@ def print_search_result(result: int, index: dict):
     files = index['files']
 
     for idx in range(0, len(files)):
-        if result & (1 << idx) > 0:
+        if (result & (1 << idx)) > 0:
             print(files[idx])
-
-
-def bit_not(val: int, max_bits: int):
-    full_bits = int('1' * max_bits, 2)
-    return full_bits ^ val
-
-
-def search(query: str, index: dict) -> str:
-    result = 0
-    for token in process(query):
-
-        result = result | index['index'].get(token, 0)
-    return str(result)

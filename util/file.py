@@ -5,15 +5,26 @@ import util.pdf
 import util.doc
 
 
+def visible_files(directory: str):
+    return filter(lambda file:
+                  not file.startswith('.')
+                  and os.path.isfile(os.path.join(directory, file)),
+                  os.listdir(directory))
+
+
 def handle_formats(filename: str) -> str:
     file_type = extension(filename)
+    doc = filename
 
     if file_type == 'pdf':
-        filename = util.pdf.to_text(filename)
+        doc = util.pdf.to_text(filename)
     elif file_type == 'docx':
-        filename = util.doc.to_text(filename)
+        doc = util.doc.to_text(filename)
 
-    return filename
+    if doc != filename:
+        print(f'Created temporary file {doc}')
+
+    return doc
 
 
 def extension(filename: str) -> str:
@@ -24,8 +35,8 @@ def extension(filename: str) -> str:
     return split[1]
 
 
-def txt_name(filename: str) -> str:
-    return split_extension(filename)[0] + '_temp.txt'
+def temp_name(filename: str) -> str:
+    return split_extension(filename)[0] + '.temp'
 
 
 def split_extension(filename: str) -> List[str]:
