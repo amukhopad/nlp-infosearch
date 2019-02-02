@@ -3,8 +3,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
-
+*$py.clas
 # C extensions
 *.so
 index.json
@@ -150,3 +149,4 @@ fabric.properties
 # Editor-based Rest Client
 .idea/httpRequests
 
+*.iml
