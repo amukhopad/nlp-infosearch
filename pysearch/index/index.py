@@ -27,10 +27,14 @@ def index(input_dir: str, index_filename: str):
 
 def update_index(file_id: int, file_name: str, index: dict) -> dict:
     print(f'\nStart indexing {file_name} with id {file_id}')
-    word_set = index_file(file_name)
-    for word in word_set:
-        usages = index.get(word, 0)
-        index[word] = usages | (1 << file_id)
+    words = index_file(file_name)
+    for pos, word in enumerate(words):
+        docs = index.get(word, {})
+        if docs == {}:
+            index[word] = docs
+        usages = docs.get(file_id, [])
+        usages.append(pos)
+        index[word][file_id] = usages
     return index
 
 
@@ -39,7 +43,6 @@ def index_file(input_name: str) -> List[str]:
     with open(filename, 'r') as file:
         data = file.read()
     procesed = process(data)
-    unique = list(set(procesed))
 
     if filename != input_name:
         os.remove(filename)
@@ -47,10 +50,11 @@ def index_file(input_name: str) -> List[str]:
 
     print(f'Finished indexing {input_name}')
 
-    return unique
+    return procesed
 
 
 def process(text: str):
     result = re.sub(r'([a-z])([A-Z])', r'\1 \2', text).lower()
+    result = re.sub(r'[ \t]*\n[ \t]*', '', result)
     result = re.split(f'[\s{string.punctuation}]+', result)
     return [PorterStemmer().stem(word) for word in result]
