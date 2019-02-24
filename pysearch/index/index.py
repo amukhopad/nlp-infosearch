@@ -5,6 +5,10 @@ import json
 
 from typing import List
 from nltk.stem.porter import PorterStemmer
+
+from trigram import index_trigram
+from rotation import index_rotation
+
 from util.file import handle_formats, visible_files
 
 
@@ -21,6 +25,9 @@ def index(input_dir: str, index_filename: str):
     with open(index_filename, 'w+') as index_file:
         data = {'files': file_names, 'index': mem_index}
         json.dump(data, index_file)
+
+    index_trigram(mem_index)
+    index_rotation(mem_index)
 
     print(f'\nDone indexing files')
 

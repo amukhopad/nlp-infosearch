@@ -6,7 +6,7 @@ __pycache__/
 *$py.clas
 # C extensions
 *.so
-index.json
+index*.json
 # Distribution / packaging
 .Python
 build/
