@@ -7,14 +7,15 @@ from index import process
 def interpret(query: str, index: dict) -> List[str]:
     operators = r'(&&|\|\||!)'
     split = re.split(f'\s*{operators}\s*', query)
-    cmd = filter(lambda x: x != '', split)
+    cmd = list(filter(lambda x: x != '', split))
+
+    if len(cmd) < 2:
+        return list(search(query, index))
 
     eval_neg = eval_not(cmd, index)
     eval_and = eval(eval_neg, index, '&&', 0, lambda a, b: a & b)
     eval_or = eval(eval_and, index, '||', 0, lambda a, b: a | b)
     print(eval_or)
-
-
     return eval_or
 
 
@@ -35,12 +36,14 @@ def eval(query: List[str], index: dict, operator: str, i: int, func) -> List[str
 def eval_not(query: List[str], index: dict) -> List[str]:
     evaluated = []
     idx = 0
-    full: set = map(lambda i: str(i), set(range(0, len(index['files']))))
+    full = set(map(lambda i: str(i), set(range(0, len(index['files'])))))
 
     while idx < len(query):
         param = query[idx]
         if param == '!':
-            param = full - search(query[idx + 1], index)
+            s = search(query[idx + 1], index)
+            print(f'Search with ! {s}')
+            param = full - s
             idx += 1
         evaluated.append(str(param))
         idx += 1
@@ -54,12 +57,15 @@ def search(query: str, index: dict) -> set:
         distance = int(split[2])
         query = split[0]
 
-    result = []
+    result = set(map(lambda i: str(i), set(range(0, len(index['files'])))))
     query = process(query)
+
+    print(f'processed serach query  {query}')
     for word in query:
         searched = index['index'].get(word, {})
         files = searched.keys()
-        result = set(result).intersection(set(files))
+        print(f'Word {word} is contained in {files}')
+        result &= set(files)
 
     return check_distance(query, result, index, distance)
 
@@ -103,5 +109,4 @@ def print_search_result(result: List[str], index: dict):
 
     files = index['files']
     for r in result:
-        filename = files.get(r, '')
-        print(filename)
+        print(files[int(r)])
