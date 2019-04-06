@@ -1,8 +1,7 @@
 package ua.edu.ukma.index
 
-import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher, TokenAssembler}
-import com.johnsnowlabs.nlp.annotators.{Normalizer, Stemmer}
-import org.apache.spark.ml.feature.RegexTokenizer
+import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher}
+import com.johnsnowlabs.nlp.annotators.{Normalizer, Stemmer, Tokenizer}
 import org.apache.spark.ml.param.ParamMap
 import org.apache.spark.ml.{Estimator, Pipeline, PipelineModel}
 import org.apache.spark.sql.{Dataset, SparkSession}
@@ -10,17 +9,14 @@ import org.apache.spark.sql.types.StructType
 
 class TextProcessor(lang: String,
     inputCol: String, outputCol: String) extends Estimator[PipelineModel] {
-
-  private val regexTokenizer = new RegexTokenizer()
+  private val documentAssembler = new DocumentAssembler()
     .setInputCol(inputCol)
-    .setOutputCol("tokens")
-    .setPattern("\\w+")
-    .setGaps(false)
-  private val documentAssembler = new TokenAssembler()
-    .setInputCols("tokens")
     .setOutputCol("document")
+  private val regexTokenizer = new Tokenizer()
+    .setInputCols(Array("document"))
+    .setOutputCol("tokens")
   private val normalizer = new Normalizer()
-    .setInputCols("documents")
+    .setInputCols("tokens")
     .setOutputCol("normalized")
   private val stemmer = new Stemmer()
     .setInputCols("normalized")
@@ -31,8 +27,8 @@ class TextProcessor(lang: String,
     .setOutputCols(outputCol)
   private val pipeline = new Pipeline()
     .setStages(Array(
-      regexTokenizer,
       documentAssembler,
+      regexTokenizer,
       normalizer,
       stemmer,
       finisher
